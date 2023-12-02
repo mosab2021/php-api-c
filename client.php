@@ -20,8 +20,8 @@ try{
         }    
         die();
     } else {
-        // $resultData = json_decode($result);
-        
+        $resultData = json_decode($result);        
+        echo ($resultData);
         
         /*
         foreach($resultData[0] as $data){

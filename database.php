@@ -43,15 +43,16 @@ class Db{
     }
 
     public function inserrtDb($tableName, $data){        
+        $resultset = [];
         $mySqlString = "INSERT INTO " . $tableName . " VALUES(null,'" . $data['name'] . "','" . $data['family'] . "', '" . $data['username'] . "', '" . $data['password'] . "',null)";
         // var_dump($mySqlString);
         $result = mysqli_query($this->connection, $mySqlString);
-        if (!$result){
-            return mysqli_error($this->connection);
+        if (!$result){            
+            $resultset['error']['insert'] = mysqli_error($this->connection);
         } else {
-            return "One Record inserted <br/>";
+            $resultset['msg'] = "One Record inserted <br/>";
         }
-        return $result;
+        return $resultset;
     }
 
     public function updateDb($tableName, $updateData, $whereClause){
@@ -66,31 +67,32 @@ class Db{
 
         $result = mysqli_query($this->connection, $sqlQuery);    
         if (!$result){
-            return $resultset['error'] = mysqli_error($this->connection);
+            $resultset['error'] = mysqli_error($this->connection);
         } else {
-            return mysqli_affected_rows($this->connection) . " Records updated <br/>";
+            $resultset['msg'] = mysqli_affected_rows($this->connection) . " Records updated <br/>";
         }
-        return $resultset['result'] = $result;
+        return $resultset;
     }
 
     public function deleteDb($tableName, $whereClause = ["1!=1"]){
+        $resultset = [];
         $whereClause = " WHERE " . implode(' AND ' , $whereClause);
         $sqlQuery = " DELETE FROM  " . $tableName
         . $whereClause;        
         
         $result = mysqli_query($this->connection, $sqlQuery);
-        if (!$result){
-            return mysqli_error($this->connection);
+        if (!$result){            
+            $resultset['error']  = mysqli_error($this->connection);
         } else {
-            return mysqli_affected_rows($this->connection) . " Records deleted <br/>";        
+            $resultset['msg']  =  mysqli_affected_rows($this->connection) . " Records deleted <br/>";
         }
-        return $result;
+        return $resultset;
     }
 
     public function getDataTable($tableName, $whereClause = null){
         // print_r($whereClause);        
         // var_dump($whereClause);
-
+        $resultset = [];
         if ($whereClause){
             $whereClause = " WHERE " . implode(' AND ' , $whereClause);
         } else {
@@ -103,10 +105,12 @@ class Db{
         ";
         // die($sqlQuery);
         $result = mysqli_query($this->connection, $sqlQuery);            
-        if (!$result){
-            return mysqli_error($this->connection);
-        }         
-        return $result;
+        if (!$result){            
+            $resultset['error'] = mysqli_error($this->connection);            
+        } else {
+            $resultset['result'] = $result;           
+        }        
+        return $resultset;
     }
 
     public function showTable($tableName) {
@@ -119,8 +123,15 @@ class Db{
         return $result;
     }
     
-    public function getApiData($tableName, $whereClause = null){        
-        return json_encode(mysqli_fetch_all($this->getDataTable($tableName, $whereClause)));
+    public function getApiData($tableName, $whereClause = null){          
+        $res = $this->getDataTable($tableName, $whereClause);       
+        if ($res['result']){
+            $arrayResult['data'] = mysqli_fetch_all($res['result']);    
+        }
+        else {
+            $arrayResult['error'] = $res['error'];
+        }        
+        return json_encode($arrayResult);
     }
     
     public function __destruct()
@@ -209,11 +220,11 @@ else if(isset($_POST['op']) && $_POST['op'] == 'show'){
 
 
 if (count($updateData)){
-    return $dbObj->updateDb($tblName, $updateData, $whereClause);
+    echo $dbObj->updateDb($tblName, $updateData, $whereClause);
 }
 else if (count($whereClause)){
-    return $dbObj->getApiData($tblName, $whereClause);
+    echo $dbObj->getApiData($tblName, $whereClause);
 } 
 else if (count($delData)){    
-    return $dbObj->deleteDb($tblName, $delData);
+    echo $dbObj->deleteDb($tblName, $delData);
 }
