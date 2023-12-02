@@ -44,7 +44,7 @@ class Db{
 
     public function inserrtDb($tableName, $data){        
         $mySqlString = "INSERT INTO " . $tableName . " VALUES(null,'" . $data['name'] . "','" . $data['family'] . "', '" . $data['username'] . "', '" . $data['password'] . "',null)";
-        var_dump($mySqlString);
+        // var_dump($mySqlString);
         $result = mysqli_query($this->connection, $mySqlString);
         if (!$result){
             return mysqli_error($this->connection);
