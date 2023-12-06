@@ -174,6 +174,7 @@ function validateInputs($data) {
 
 $whereClause = [];
 $updateData = [];
+$createData = [];
 $delData = [];
 
 
@@ -212,7 +213,20 @@ else if(isset($_POST['op']) && $_POST['op'] == 'show'){
     if (isset($_POST['password'])){
         $whereClause[] = "password = " . "'" . md5(validateInputs($_POST['password'])) . "'";    
     }
-} else {
+} 
+else if (isset($_POST['op']) && $_POST['op'] == 'create' && (    
+    isset($_POST['name']) && 
+    isset($_POST['family']) && 
+    isset($_POST['username']) &&     
+    isset($_POST['password'])
+    )
+    ){  
+        $createData['name'] = validateInputs($_POST['name']);    
+        $createData['family'] = validateInputs($_POST['family']);    
+        $createData['username'] = validateInputs($_POST['username']);    
+        $createData['password'] = validateInputs($_POST['password']);    
+} 
+else {
     return json_encode("Command Not Found!!!");
 }
 
@@ -228,4 +242,7 @@ else if (count($whereClause)){
 } 
 else if (count($delData)){    
     echo $dbObj->deleteDb($tblName, $delData);
+}
+else if (count($createData)){
+    echo $dbObj->inserrtDb($tblName, $createData);
 }

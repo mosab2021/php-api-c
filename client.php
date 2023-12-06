@@ -1,4 +1,5 @@
 <?php
+function getWebserviceData(){
 try{
     $handle = curl_init();
     $formData = [
@@ -44,4 +45,44 @@ try{
 catch(Exception $ex){
     echo $ex->getMessage();
 }
+}
+
+function setWebserviceData(){
+    $person = [
+        'op' => 'create',        
+        'name' => 'mohammad',
+        'family' => 'sharifi',
+        'username' => 'usr',
+        'password' => md5('123456')   
+    ];
+    try{
+        $handle = curl_init();        
+        $queryData = http_build_query($person,'', '&');    
+        $url = "http://localhost/practice/database.php";
+        curl_setopt($handle, CURLOPT_URL, $url);
+        curl_setopt($handle, CURLOPT_TRANSFERTEXT, true);
+        curl_setopt($handle, CURLOPT_FAILONERROR, true);  
+        curl_setopt($handle, CURLOPT_POST, TRUE);
+        curl_setopt($handle, CURLOPT_POSTFIELDS, $queryData);
+        curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
+        $result = curl_exec($handle);    
+        if(curl_errno($handle)){
+            $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            if ($httpCode == 404){            
+                echo "Your URL does not exist";
+            }    
+            die();
+        } else {
+            $resultData = json_decode($result);
+            print($resultData);
+        }
+        curl_close($handle);
+    
+    }
+    catch(Exception $ex){
+        echo $ex->getMessage();
+    }
+}
+// getWebserviceData();
+setWebserviceData();
 ?>
