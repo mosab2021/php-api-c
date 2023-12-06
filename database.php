@@ -223,7 +223,8 @@ if (count($updateData)){
     echo $dbObj->updateDb($tblName, $updateData, $whereClause);
 }
 else if (count($whereClause)){
-    echo $dbObj->getApiData($tblName, $whereClause);
+    echo json_encode($dbObj->getApiData($tblName, $whereClause));
+    // return $dbObj->getApiData($tblName, $whereClause);
 } 
 else if (count($delData)){    
     echo $dbObj->deleteDb($tblName, $delData);

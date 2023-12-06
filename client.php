@@ -12,7 +12,15 @@ try{
     curl_setopt($handle, CURLOPT_FAILONERROR, true);  
     curl_setopt($handle, CURLOPT_POST, TRUE);
     curl_setopt($handle, CURLOPT_POSTFIELDS, $queryData);
+    curl_setopt( $handle, CURLOPT_RETURNTRANSFER, true );
+    // curl_setopt($handle, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    
     $result = curl_exec($handle);    
+    print($result);
+    // $resultData = json_decode($result);  
+    // print($resultData) ;
+    // print($result);
+    
     if(curl_errno($handle)){
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         if ($httpCode == 404){            
@@ -21,13 +29,14 @@ try{
         die();
     } else {
         $resultData = json_decode($result);        
-        echo ($resultData);
+        // echo ($resultData);
+        // print($resultData);
         
-        /*
-        foreach($resultData[0] as $data){
+       
+        foreach($resultData as $data){
             echo $data;
         }
-        */
+        
         
     }
     curl_close($handle);
