@@ -42,15 +42,39 @@ class Db{
         }
     }
 
+    public function createTable(){
+        $resultset = [];
+        $mySqlString = "
+            CREATE TABLE IF NOT EXISTS person (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                family VARCHAR(255),
+                username VARCHAR(25) NOT NULL,
+                password VARCHAR(50) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        ";
+
+        $result = mysqli_query($this->connection, $mySqlString);
+
+        if ($result === TRUE){            
+            $resultset['msg'] = "Table created successfully";
+            
+        } else {
+            $resultset['error']['insert'] = mysqli_error($this->connection);
+        }
+      }
+
     public function inserrtDb($tableName, $data){        
         $resultset = [];
-        $mySqlString = "INSERT INTO " . $tableName . " VALUES(null,'" . $data['name'] . "','" . $data['family'] . "', '" . $data['username'] . "', '" . $data['password'] . "',null)";
+        $mySqlString = "INSERT INTO " . $tableName . " VALUES(null,'" . $data['name'] . "','" . $data['family'] . "', '" . $data['username'] . "', '" . $data['password'] . "', null, null)";
         // var_dump($mySqlString);
         $result = mysqli_query($this->connection, $mySqlString);
         if (!$result){            
             $resultset['error']['insert'] = mysqli_error($this->connection);
         } else {
-            $resultset['msg'] = "One Record inserted <br/>";
+            $resultset['msg'] = "One Record inserted";
         }
         return $resultset;
     }
@@ -147,16 +171,22 @@ class Db{
 
 $tblName = "person";
 $dbObj = new Db();
-$data = [
-    'name' => 'mohmad',
-    'family' => 'sharifi',
-    'username' => 'pc',
-    'password' => md5('123456')    
-];
-// $dbObj->inserrtDb($tblName, $data);
+
+// echo json_encode($dbObj->createTable());
+
+/*
+for($i=0; $i<10; $i++){
+    $data = [
+        'name' => 'Mosab' . $i,
+        'family' => 'sharifi' . $i,
+        'username' => 'moh' . $i,
+        'password' => md5('987654')    
+    ];    
+    echo json_encode($dbObj->inserrtDb($tblName, $data));
+}
+*/
+
 // $dbObj->showTable($tblName);
-
-
 
 // $a = hash("sha256", '123456');
 // var_dump($a);
@@ -227,7 +257,7 @@ else if (isset($_POST['op']) && $_POST['op'] == 'create' && (
         $createData['password'] = validateInputs($_POST['password']);    
 } 
 else {
-    return json_encode("Command Not Found!!!");
+    echo "Command Not Found!!!";
 }
 
 // $dbObj->getDataTable($tblName, $whereClause);
@@ -235,14 +265,18 @@ else {
 
 if (count($updateData)){
     echo $dbObj->updateDb($tblName, $updateData, $whereClause);
+    // echo json_encode($dbObj->updateDb($tblName, $updateData, $whereClause));
 }
 else if (count($whereClause)){
-    echo json_encode($dbObj->getApiData($tblName, $whereClause));
     // return $dbObj->getApiData($tblName, $whereClause);
+    // echo json_encode($dbObj->getApiData($tblName, $whereClause));
+    echo $dbObj->getApiData($tblName, $whereClause);
 } 
 else if (count($delData)){    
     echo $dbObj->deleteDb($tblName, $delData);
+    // echo json_encode($dbObj->deleteDb($tblName, $delData));
 }
 else if (count($createData)){
+    // echo json_encode($dbObj->inserrtDb($tblName, $createData));
     echo $dbObj->inserrtDb($tblName, $createData);
 }

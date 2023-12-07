@@ -1,13 +1,16 @@
 <?php
-function getWebserviceData(){
+// define("WEBSERVICE_URL", "http://localhost/practice/database.php");
+define("WEBSERVICE_URL", "http://localhost/php-api-c/database.php");
+
+function getWebserviceData($op, $value){
 try{
     $handle = curl_init();
     $formData = [
-        'op' => 'srch',
-        'search' => 'pc'
+        'op' => $op,
+        'search' => $value
     ];
     $queryData = http_build_query($formData,'', '&');    
-    $url = "http://localhost/practice/database.php";
+    $url = WEBSERVICE_URL;
     curl_setopt($handle, CURLOPT_URL, $url);
     curl_setopt($handle, CURLOPT_TRANSFERTEXT, true);
     curl_setopt($handle, CURLOPT_FAILONERROR, true);  
@@ -17,7 +20,7 @@ try{
     // curl_setopt($handle, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
     
     $result = curl_exec($handle);    
-    print($result);
+    // print($result);
     // $resultData = json_decode($result);  
     // print($resultData) ;
     // print($result);
@@ -29,13 +32,15 @@ try{
         }    
         die();
     } else {
-        $resultData = json_decode($result);        
+        // $resultData = json_decode(json_decode($result), true);        
+        $resultData = json_decode($result, true);        
         // echo ($resultData);
-        // print($resultData);
+        // print_r($resultData['data']);
         
        
-        foreach($resultData as $data){
-            echo $data;
+        foreach($resultData['data'] as $data){
+            echo "<br>";
+            print_r($data);
         }
         
         
@@ -58,7 +63,7 @@ function setWebserviceData(){
     try{
         $handle = curl_init();        
         $queryData = http_build_query($person,'', '&');    
-        $url = "http://localhost/practice/database.php";
+        $url = WEBSERVICE_URL;
         curl_setopt($handle, CURLOPT_URL, $url);
         curl_setopt($handle, CURLOPT_TRANSFERTEXT, true);
         curl_setopt($handle, CURLOPT_FAILONERROR, true);  
@@ -83,6 +88,6 @@ function setWebserviceData(){
         echo $ex->getMessage();
     }
 }
-// getWebserviceData();
-setWebserviceData();
+getWebserviceData('srch', 'moh');
+// setWebserviceData();
 ?>
